@@ -5,11 +5,13 @@ module.exports = function(router){
 		//there's no need to return anything to the blend api in this route
 		router.all('/events', function(req, res) {
 
-			var currentUrl = config.url + '/events';
-			var eventData = req.app.get('genieApi').processEvent(currentUrl, req, res);
+			var genieApi = req.app.get('genieApi');
+
+			var currentUrl = req.app.get('config').url + '/events';
+			var eventData = genieApi.processEvent(currentUrl, req, res);
 
 		     //no event or other invalid data
-		     if (!eventData || eventData.event){
+		     if (!eventData || !eventData.event){
 		     	return;
 		     }
 

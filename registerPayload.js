@@ -4,9 +4,15 @@ genieApi.config(config.api);
 
 var payload = {
 
-	name: 'Sample genie',
+	name: {
+		value: 'Sample genie'
+	},
+
+	description: {
+		value: 'A sample genie that you can play with'
+	},
+
 	permissions: ['genie/global'],
-	description: 'A sample genie that you can play with',
 	availability: '*',
 	subscriptions: '*',
 
