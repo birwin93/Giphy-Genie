@@ -4,10 +4,16 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const redis = require('redis');
+const cors = require('cors');
 const config = require('./config');
+
+redisClient = redis.createClient();
 
 var app = express();
 
+app.use(cors());
+app.set('redis', redisClient);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -19,6 +25,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+app.use(function(req,res,next){
+	res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+	res.header('Expires', '-1');
+	res.header('Pragma', 'no-cache');
+	next();
+});
 
 //set up genie api for express as a variable so it can be accessed within routes
 const genieApi = require('genie.apiclient');

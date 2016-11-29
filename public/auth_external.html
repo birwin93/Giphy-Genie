@@ -1,0 +1,40 @@
+<html>
+<body>
+
+<p>
+
+This emulates an authentication with a 3rd party service (oauth or other) <br />
+Normally you would do authentication in this webframe and than redirect the user back to the app with eiter success or fail status<br />
+It's up to you as a Genie developer to save relevant info (tokens etc) and link them with the user and group.
+</p>
+
+<input type="button" value="emulate success" onclick="ipcSendConnectStatus('success')"/>
+<br /><br />
+
+<input type="button" value="emulate fail" onclick="ipcSendConnectStatus('fail')"/>
+
+<script>
+
+function ipcSendConnectStatus(status){
+    //cb_uri_scheme present
+    var cbUri = window.location.href.match(/cb_uri_scheme\=([0-9a-z\.\-]*)/i);
+    var cbIdentifier = window.location.href.match(/cb_identifier\=([0-9a-z\.\-]*)/i);
+    if (cbUri){
+        window.location = cbUri[1]+'://auth.genies/'+ status + (cbIdentifier ? '?identifier='+ encodeURIComponent(cbIdentifier[1]) : '');
+    } else {
+ 
+    //cb_uri_scheme not present, sending message via postMessage interface.
+        window.opener.postMessage({action: 'auth.genies', status: status, identifier: (cbIdentifier ? cbIdentifier[1] : null)}, '*');
+    }
+ 
+ 
+    //close the window on web clients, make sure to set a big timeout otherwise the user might not have time to click launch app and it might not redirect them back if the windows is closed.
+// in the ideal world when the genie onboarding is done this window is closed via some kind of socket events.
+    setTimeout(function(){
+        window.close();
+    }, 2500);
+}
+
+</script>
+</body>
+</html>

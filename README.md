@@ -1,9 +1,11 @@
 # Sample genie | nodeJS
 Get more info about how to create genies for Blend Messenger at [developers.blend.la](https://developers.blend.la)
 
-This repo contains a basic genie with nodeJS and [express](http://expressjs.com).
+This repo contains a basic genie with nodeJS and [express](http://expressjs.com) and also uses the core [Genies api sdk](https://www.npmjs.com/package/genie.apiclient) for nodeJS 6+.
 
 When added to a group this genie will send a simple welcome message and then will continue to welcome new people when members are added within the groups the genie is added.
+
+3rd party authentication is also emulated as to show how OAUTH could be used to authenticate clients with other services.
 
 Bellow you'll find a quick tutorial on how to get this Genie up and running on a new VPS.
 Please keep in mind that this tutorial is tailored for **CentOS 7.2 x64**.
@@ -40,10 +42,10 @@ yum install epel-release -y
 ```
 
 #### 2. Packages we need
-Now let's install haproxy (a reverse-proxy that we are going to use for HTTPS termination, nodeJS and git so we can clone this repo)
+Now let's install haproxy (a reverse-proxy that we are going to use for HTTPS termination, nodeJS, Redis and git so we can clone this repo)
 
 ```bash
-yum install haproxy nodejs git -y
+yum install haproxy nodejs git redis -y
 ```
 
 #### 3. HTTPS certificate and haproxy
@@ -143,6 +145,13 @@ systemctl enable haproxy && systemctl start haproxy
 ```bash
 systemctl restart firewalld && firewall-cmd --permanent --add-port=443/tcp && firewall-cmd --reload
 ```
+
+#### 5. Enable and start redis
+```bash
+systemctl enable redis && systemctl start redis
+```
+
+We use redis to store some information needed by the Genie such as user information (key, secrets, etc)
 
 #### 5. Install the Genie/nodejs project
 
