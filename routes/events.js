@@ -66,6 +66,9 @@ module.exports = function(router) {
 					console.log('A group that had the genie was removed altogether');
 					break;
 
+				case 'content/message':
+					console.log(eventData.payload);
+					break;
 			}
 		});
 	});

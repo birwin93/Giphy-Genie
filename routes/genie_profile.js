@@ -35,7 +35,7 @@ module.exports = function(router){
 
 						{
 							name: 'name',
-							value: 'John Snow',
+							value: 'Giphy',
 						}
 						],
 					}

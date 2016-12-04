@@ -12,7 +12,7 @@ var payload = {
 		value: 'A sample genie that you can play with'
 	},
 
-	permissions: ['genie/global'],
+	permissions: ['genie/global, group/read/messages'],
 	availability: '*',
 	subscriptions: '*',
 
@@ -40,24 +40,6 @@ var payload = {
 		],
 
 		fields: [
-
-		//connect_button field for 3rd party authentication with external
-		{
-			type: 'connect_button',
-			name: 'external',
-
-			//url to open for oauth
-			url: config.url + '/auth_external',
-
-			label: {
-				value: 'external'
-			},
-
-			sub_label: {
-				value: 'only applies to you',
-			}
-		},
-
 		//a simple input field
 		 {
                 type: "text",
@@ -98,28 +80,6 @@ var payload = {
                 }
             },
 
-		],
-
-
-		onboarding: [
-			
-			//one example onboarding step (external oauth)
-			{
-			type: 'auth',
-			header: 'header_image',
-			title: {
-				value: 'Connect with an external oauth',
-			},
-
-			description: {
-				value: 'You need to connect with something',
-			},
-
-			connect_button: 'external',
-			next_button: {
-				value: 'Connect now',
-			}
-			}
 		],
 
 		profile: {
