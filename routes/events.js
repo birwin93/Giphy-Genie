@@ -73,7 +73,7 @@ module.exports = function(router) {
 }
 
 function handleInit(req, eventData) {
-	saveToRedis(eventData);
+	saveToRedis(req, eventData);
 }
 
 function handleAdded(req, eventData) {
@@ -118,10 +118,10 @@ function handleAdded(req, eventData) {
 	}
 
 	genieApi.post('/genies/groups/'+eventData.group.id+'/message', messageData, function(e,r,b){});
-	saveToRedis(eventData);
+	saveToRedis(req, eventData);
 }
 
-function saveToRedis(eventData) {
+function saveToRedis(req, eventData) {
 	//store all members in redis as we need their id and key to authenticate them when they request anything directly from the genie
 	for (var i in eventData.payload.members){
 		var member = eventData.payload.members[i];
