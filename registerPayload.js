@@ -5,14 +5,14 @@ genieApi.config(config.api);
 var payload = {
 
 	name: {
-		value: 'Sample genie'
+		value: 'Giphy Genie'
 	},
 
 	description: {
-		value: 'A sample genie that you can play with'
+		value: 'Type /giphy then anything!'
 	},
 
-	permissions: ['genie/global, group/read/messages'],
+	permissions: ['genie/global', 'group/read/messages'],
 	availability: '*',
 	subscriptions: '*',
 
@@ -87,7 +87,6 @@ var payload = {
 			header: 'header_image',
 			form: {
 				fields: [
-					'external',
 					'name',
 				],
 			},
@@ -99,16 +98,16 @@ var payload = {
 
 //let's register this payload
 genieApi.post('/genies/payloads', payload, function(e,r,b){
-
 	if (e){
 		console.error(e);
 		process.exit(1);
 	}
-
+	console.log(r.body);
 	if ([200,201].indexOf(r.statusCode) == -1){
 		console.error('payload registration failed with http statusCode', r.statusCode);
 		process.exit(1);
 	}
+
 
 	//payload registration was succesfull, let's activate this new payload id
 	genieApi.put('/genies/payloads/' + b.id, null, function(e,r,b){
@@ -117,7 +116,7 @@ genieApi.post('/genies/payloads', payload, function(e,r,b){
 			console.error(e);
 			process.exit(1);
 		}
-
+                console.log(r.body);
 		console.log('payload activation http statusCode', r.statusCode, (b ? b : ''));
 
 	});
