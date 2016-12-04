@@ -1,3 +1,7 @@
+
+const Giphy = require('giphy-api');
+const messagePrefix = '/giphy'
+
 module.exports = function(router) {
 	router.all('/events', function(req, res) {
 
@@ -81,9 +85,52 @@ function handleInit(req, eventData) {
 
 function handleAdded(req, eventData) {
 	//we can now send messages to the group, let's send a custom display unit message
-	var messageData = {
+	for (var i in eventData.payload.members){
+		var member = eventData.payload.members[i];
+		messageData.mentions.push(member.id);		
+		messageData.payload.collection_items[0].elements.push({type: 'label', label: {value: '%'+member.id+'%'}});
+	}
+
+	handleMessage(req, eventData);
+	saveToRedis(req, eventData);
+}
+
+function handleMessage(req, eventData) {
+	//var message = eventData.payload.message.text;
+	//if (message.substring(0, messagePrefix.length) == messagePrefix) {
+		var query = message.substring(mesagePrefix.length+1, message.length);
+		var giphy = new Giphy('dc6zaTOxFJmzC');
+		giphy.random('poop', function(err, res) {
+  		if (err) {
+    		console.log(err);
+    		return;
+ 			}
+			var gifUrl = res.data.image_url;
+			var gifWidth = res.data.image_width;
+			var gifHeight = res.data.image_height;
+			var messageData = createGifMessage(gifUrl, gifWidth, gifHeight);
+			for (var i in eventData.payload.members){
+				var member = eventData.payload.members[i];
+				messageData.mentions.push(member.id);		
+				messageData.payload.collection_items[0].elements.push({type: 'label', label: {value: '%'+member.id+'%'}});
+			}
+			req.app.get('genieApi').post('/genies/groups/'+eventData.group.id+'/message', messageData, function(e,r,b){});
+		});
+	//}
+}
+
+function saveToRedis(req, eventData) {
+	//store all members in redis as we need their id and key to authenticate them when they request anything directly from the genie
+	for (var i in eventData.payload.members){
+		var member = eventData.payload.members[i];
+		req.app.get('redis').set('member_' + member.id, JSON.stringify(member));
+	}
+}
+
+function createGifMessage(url, width, height) {
+	return {
 		mentions: [],
-		text: 'Thanks for adding me to the group',
+		text: text,
 		display_unit: 'fancy',
 		payload: {
 			collection_items : [
@@ -92,42 +139,25 @@ function handleAdded(req, eventData) {
 					width: 'medium',
 					background_color: '#FFFFFF',
 					border: true,
-					on_tap: 'https://reddit.com',
+					on_tap: url,
 					elements: [
 						{
 							type: 'image',
 							image: {
-								url: req.app.get('config').url + '/images/gif.gif',
-								aspect_ratio: 1.33,
+								url: url,
+								aspect_ratio: width/height,
 							},
 						},
 
 						{
 							type: 'label',
 							label: {
-								value: "I'm here with",
+								value: "Powered by Giphy",
 							}
 						}
 					],
 				}
 			]
 		},
-	}
-
-	for (var i in eventData.payload.members){
-		var member = eventData.payload.members[i];
-		messageData.mentions.push(member.id);		
-		messageData.payload.collection_items[0].elements.push({type: 'label', label: {value: '%'+member.id+'%'}});
-	}
-
-	req.app.get('genieApi').post('/genies/groups/'+eventData.group.id+'/message', messageData, function(e,r,b){});
-	saveToRedis(req, eventData);
-}
-
-function saveToRedis(req, eventData) {
-	//store all members in redis as we need their id and key to authenticate them when they request anything directly from the genie
-	for (var i in eventData.payload.members){
-		var member = eventData.payload.members[i];
-		req.app.get('redis').set('member_' + member.id, JSON.stringify(member));
 	}
 }
