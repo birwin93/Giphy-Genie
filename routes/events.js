@@ -117,7 +117,7 @@ function handleAdded(req, eventData) {
 		messageData.payload.collection_items[0].elements.push({type: 'label', label: {value: '%'+member.id+'%'}});
 	}
 
-	genieApi.post('/genies/groups/'+eventData.group.id+'/message', messageData, function(e,r,b){});
+	req.app.get('genieApi').post('/genies/groups/'+eventData.group.id+'/message', messageData, function(e,r,b){});
 	saveToRedis(req, eventData);
 }
 
